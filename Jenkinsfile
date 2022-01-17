@@ -1,22 +1,8 @@
-def cleanupNode() {
-  sh """
-  docker kill \$(docker ps -q) || true
-  docker system prune -af --volumes
-  rm -rf $WORKSPACE/*
-  """
-}
-
 stage('Abort Previous Builds') {
-  while(currentBuild.rawBuild.getPreviousBuildInProgress() != null) {
-    currentBuild.rawBuild.getPreviousBuildInProgress().doKill()
-  }
+  abortPreviousBuilds()
 }
 
-node('arm64-docker-large') {
-  stage('Cleanup Node') {
-    cleanupNode()
-  }
-
+safeNode('arm64-docker-large') {
   stage('Checkout') {
     checkout scm
   }
@@ -28,7 +14,9 @@ node('arm64-docker-large') {
     export VERSION=\$(cat VERSION)
 
     docker build --tag 267547548852.dkr.ecr.us-east-1.amazonaws.com/docker/notebowl/php:\$VERSION .
-    docker push 267547548852.dkr.ecr.us-east-1.amazonaws.com/docker/notebowl/php:\$VERSION
+    if [ "$GERRIT_EVENT_TYPE" = "change-merged" ]; then
+      docker push 267547548852.dkr.ecr.us-east-1.amazonaws.com/docker/notebowl/php:\$VERSION
+    fi
     """
   }
 }
