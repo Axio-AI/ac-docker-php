@@ -13,9 +13,9 @@ safeNode('arm64-docker-large') {
 
     export VERSION=\$(cat VERSION)
 
-    docker build --tag 267547548852.dkr.ecr.us-east-1.amazonaws.com/docker/notebowl/php:\$VERSION .
+    docker build --tag 267547548852.dkr.ecr.us-east-1.amazonaws.com/docker/php:\$VERSION .
     if [ "$GERRIT_EVENT_TYPE" = "change-merged" ]; then
-      docker push 267547548852.dkr.ecr.us-east-1.amazonaws.com/docker/notebowl/php:\$VERSION
+      docker push 267547548852.dkr.ecr.us-east-1.amazonaws.com/docker/php:\$VERSION
     fi
     """
   }
