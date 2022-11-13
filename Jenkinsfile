@@ -3,7 +3,7 @@ safeNode('arm64-docker-large') {
     checkout scm
   }
 
-  stage('Build') {
+  stage('Build ARM64') {
     sh """
     aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 267547548852.dkr.ecr.us-east-1.amazonaws.com
 
@@ -22,7 +22,7 @@ safeNode('amd64-docker-large') {
     checkout scm
   }
 
-  stage('Build') {
+  stage('Build AMD64') {
     sh """
     aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 267547548852.dkr.ecr.us-east-1.amazonaws.com
 
@@ -48,9 +48,11 @@ safeNode('arm64-docker-large') {
 
     if [ "$GERRIT_EVENT_TYPE" = "change-merged" ]; then
       docker manifest create \
-        267547548852.dkr.ecr.us-east-1.amazonaws.com/docker/php:\$VERSION \
+        267547548852.dkr.ecr.us-east-1.amazonaws.com/docker/php:\${VERSION} \
         --amend 267547548852.dkr.ecr.us-east-1.amazonaws.com/docker/php:\${VERSION}-arm64 \
         --amend 267547548852.dkr.ecr.us-east-1.amazonaws.com/docker/php:\${VERSION}-amd64
+
+      docker manifest push 267547548852.dkr.ecr.us-east-1.amazonaws.com/docker/php:\${VERSION}
     fi
     """
   }
