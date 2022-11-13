@@ -1,12 +1,12 @@
 FROM php:7.2-fpm
 
 RUN apt-get update
-RUN apt-get -o Acquire::ForceIPv4=true install -y libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
-                                                  default-mysql-client pv wget psmisc procps \
-                                                  redis-tools curl git nano sudo \
-                                                  software-properties-common libmcrypt-dev \
-                                                  libmagickwand-dev zip iputils-ping \
-                                                  libmemcached-dev libzip-dev
+RUN apt-get install -y libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
+                        default-mysql-client pv wget psmisc procps \
+                        redis-tools curl git nano sudo \
+                        software-properties-common libmcrypt-dev \
+                        libmagickwand-dev zip iputils-ping \
+                        libmemcached-dev libzip-dev nginx
 
 # Install imagick
 RUN pecl install imagick
