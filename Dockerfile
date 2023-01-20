@@ -6,7 +6,7 @@ RUN apt-get install -y libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
                         redis-tools curl git nano sudo \
                         software-properties-common libmcrypt-dev \
                         libmagickwand-dev zip iputils-ping \
-                        libmemcached-dev libzip-dev nginx htop
+                        libmemcached-dev libzip-dev nginx htop supervisor
 
 # Install imagick
 RUN pecl install imagick
