@@ -1,37 +1,37 @@
-def withCheckout(Closure c) {
-  sh "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 267547548852.dkr.ecr.us-east-1.amazonaws.com"
-  checkout scm
-  c()
+def withBuildContext(label, Closure c) {
+  safeNode(label) {
+    checkout scm
+
+    withDockerCredentials {
+      def version = sh(script: "cat VERSION", returnStdout: true).trim()
+
+      withEnv([
+        "VERSION=${version}"
+      ]) {
+        c()
+      }
+    }
+  }
 }
 
 def jobs = [:]
 
 jobs["amd"] = {
-  safeNode('amd64-docker-large') {
-    withCheckout {
-      sh """
-      export VERSION=\$(cat VERSION)-amd64
+  withBuildContext('amd64-docker-large') {
+    sh "docker build --tag activeclass/php:\${VERSION}-amd64 ."
 
-      docker build --tag 267547548852.dkr.ecr.us-east-1.amazonaws.com/docker/php:\${VERSION} .
-      if [ "$GERRIT_EVENT_TYPE" = "change-merged" ]; then
-        docker push 267547548852.dkr.ecr.us-east-1.amazonaws.com/docker/php:\${VERSION}
-      fi
-      """
+    if (isChangeMerged()) {
+      sh "docker push activeclass/php:\${VERSION}-amd64"
     }
   }
 }
 
 jobs["arm"] = {
-  safeNode('arm64-docker-large') {
-    withCheckout {
-      sh """
-      export VERSION=\$(cat VERSION)-arm64
+  withBuildContext('arm64-docker-large') {
+    sh "docker build --tag activeclass/php:\${VERSION}-arm64 ."
 
-      docker build --tag 267547548852.dkr.ecr.us-east-1.amazonaws.com/docker/php:\${VERSION} .
-      if [ "$GERRIT_EVENT_TYPE" = "change-merged" ]; then
-        docker push 267547548852.dkr.ecr.us-east-1.amazonaws.com/docker/php:\${VERSION}
-      fi
-      """
+    if (isChangeMerged()) {
+      sh "docker push activeclass/php:\${VERSION}-arm64"
     }
   }
 }
@@ -40,20 +40,16 @@ stage('Build') {
   parallel jobs
 }
 
-safeNode('arm64-docker-large') {
+if (isChangeMerged()) {
   stage('Update Manifest') {
-    withCheckout {
+    withBuildContext('arm64-docker-large') {
       sh """
-        export VERSION=\$(cat VERSION)
-
-      if [ "$GERRIT_EVENT_TYPE" = "change-merged" ]; then
         docker manifest create \
-          267547548852.dkr.ecr.us-east-1.amazonaws.com/docker/php:\${VERSION} \
-          --amend 267547548852.dkr.ecr.us-east-1.amazonaws.com/docker/php:\${VERSION}-arm64 \
-          --amend 267547548852.dkr.ecr.us-east-1.amazonaws.com/docker/php:\${VERSION}-amd64
+          activeclass/php:\${VERSION} \
+          --amend activeclass/php:\${VERSION}-arm64 \
+          --amend activeclass/php:\${VERSION}-amd64
 
-        docker manifest push 267547548852.dkr.ecr.us-east-1.amazonaws.com/docker/php:\${VERSION}
-      fi
+        docker manifest push activeclass/php:\${VERSION}
       """
     }
   }
