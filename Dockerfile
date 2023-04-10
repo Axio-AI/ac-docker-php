@@ -19,6 +19,9 @@ RUN docker-php-ext-enable mcrypt
 # Install gd
 RUN docker-php-ext-install gd
 
+# Install socket
+RUN docker-php-ext-install sockets
+
 # Install memcached
 RUN pecl install memcached
 RUN docker-php-ext-enable memcached
