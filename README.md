@@ -1,4 +1,4 @@
-## Notebowl PHP Docker Image
+## ActiveClass PHP Docker Image
 This container is used to run nb-api tests in along with provide a CGI interface for Nginx to serve.
 
 ---
@@ -15,4 +15,4 @@ Package | Port
 PHP | 9000
 
 ---
-Maintained by alexs@notebowl.com
+Maintained by alexs@activeclass.com
