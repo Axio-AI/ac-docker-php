@@ -26,6 +26,8 @@ RUN pecl install imagick \
   && docker-php-ext-install pdo_mysql \
   && docker-php-ext-install soap \
   && docker-php-ext-install zip \
+  && pecl install redis \
+  && docker-php-ext-enable redis.so \
   # && pecl install xdebug-3.1.6 \
   && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
   && rm -rf /tmp/pear /usr/local/etc/php-fpm.conf.default /usr/local/etc/php-fpm.d/www.conf*
