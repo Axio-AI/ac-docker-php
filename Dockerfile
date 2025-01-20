@@ -6,7 +6,7 @@ RUN apt-get update \
     redis-tools curl git nano sudo \
     software-properties-common libmcrypt-dev \
     libmagickwand-dev zip iputils-ping \
-    libmemcached-dev libzip-dev nginx htop supervisor \
+    libmemcached-dev libzip-dev nginx htop supervisor npm \
   && apt-get clean
 
 RUN pecl install imagick \
